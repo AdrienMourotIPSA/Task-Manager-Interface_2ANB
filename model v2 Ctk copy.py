@@ -14,46 +14,46 @@ class FlightTestTaskManager:
         self.root = root
         self.root.title("Gestionnaire de Tâches - Tests en Vol")
         self.root.geometry("1200x700")
-        
-        ctk.set_appearance_mode("light")
 
-        self.translations = {
+        ctk.set_appearance_mode("light")
+        
+        # Définitions des langues
+        self.languages = {
             "fr": {
                 "title": "Gestionnaire de Tâches - Tests en Vol",
                 "new_task": "Nouvelle tâche :",
                 "task_type": "Type de tâche :",
                 "deadline": "Date limite (YYYY-MM-DD) :",
-                "today_date": "Date d'aujourd'hui :",
+                "today": "Date d'aujourd'hui :",
                 "add_task": "Ajouter Tâche",
                 "todo": "À faire :",
                 "completed": "Terminées :",
-                "theme_toggle": "Changer le Thème",
                 "tasks_today": "Tâches d'Aujourd'hui",
-                "all_tasks": "Afficher toutes les tâches",
+                "show_all": "Afficher toutes les tâches",
+                "change_theme": "Changer le Thème",
                 "filter_color": "Filtrer par Couleur",
-                "chart_completed": "Graphique: Tâches terminées",
-                "chart_types": "Graphique: Répartition des couleurs",
+                "chart_completion": "Graphique: Tâches terminées",
+                "chart_types": "Graphique: Répartition des couleurs"
             },
             "en": {
                 "title": "Task Manager - Flight Tests",
                 "new_task": "New Task:",
                 "task_type": "Task Type:",
                 "deadline": "Deadline (YYYY-MM-DD):",
-                "today_date": "Today's Date:",
+                "today": "Today's Date:",
                 "add_task": "Add Task",
                 "todo": "To Do:",
                 "completed": "Completed:",
-                "theme_toggle": "Toggle Theme",
                 "tasks_today": "Today's Tasks",
-                "all_tasks": "Show All Tasks",
+                "show_all": "Show All Tasks",
+                "change_theme": "Change Theme",
                 "filter_color": "Filter by Color",
-                "chart_completed": "Chart: Completed Tasks",
-                "chart_types": "Chart: Task Type Distribution",
-            },
+                "chart_completion": "Chart: Completed Tasks",
+                "chart_types": "Chart: Task Types Distribution"
+            }
         }
-        self.current_language = "fr"
+        self.current_language = "fr"  # Langue par défaut
 
-        
         self.light_theme = {
             "bg": "#f0f0f0",
             "fg": "#000000",
@@ -62,7 +62,7 @@ class FlightTestTaskManager:
             "button_bg": "#D4F7AE",
             "button_fg": "#000000"
         }
-
+        
         self.dark_theme = {
             "bg": "#2b2b2b",
             "fg": "#ffffff",
@@ -73,44 +73,81 @@ class FlightTestTaskManager:
         }
 
         self.current_theme = self.light_theme
-
         self.task_types = {
             "Préparation du vol": "#AEDFF7",
             "Installation de l'équipement": "#D4F7AE",
             "Collecte de données": "#F7B4A6",
             "Analyse post-vol": "#D3D3D3"
         }
-
         self.tasks = []
         self.today = datetime.now()
-
-        self.load_tasks_from_json()  # Load tasks from JSON at startup
+        
+        self.load_tasks_from_json()  # Chargement des tâches
         self.create_widgets()
-
         self.update_task_lists()
-    
-    def update_language(self):
-        lang = self.current_language
-        self.root.title(self.translations[lang]["title"])
-        self.title_label.configure(text=self.translations[lang]["title"])
-        self.new_task_label.configure(text=self.translations[lang]["new_task"])
-        self.task_type_label.configure(text=self.translations[lang]["task_type"])
-        self.deadline_label.configure(text=self.translations[lang]["deadline"])
-        self.today_label.configure(text=self.translations[lang]["today_date"])
-        self.add_task_button.configure(text=self.translations[lang]["add_task"])
-        self.todo_label.configure(text=self.translations[lang]["todo"])
-        self.completed_label.configure(text=self.translations[lang]["completed"])
-        self.theme_button.configure(text=self.translations[lang]["theme_toggle"])
-        self.tasks_today_button.configure(text=self.translations[lang]["tasks_today"])
-        self.all_tasks_button.configure(text=self.translations[lang]["all_tasks"])
-        self.filter_color_button.configure(text=self.translations[lang]["filter_color"])
-        self.chart_completed_button.configure(text=self.translations[lang]["chart_completed"])
-        self.chart_types_button.configure(text=self.translations[lang]["chart_types"])
 
     def toggle_language(self):
+        """Basculer entre les langues et mettre à jour l'interface"""
         self.current_language = "en" if self.current_language == "fr" else "fr"
         self.update_language()
 
+    def update_language(self):
+        """Mettre à jour tous les textes de l'interface"""
+        lang = self.languages[self.current_language]
+        self.root.title(lang["title"])
+        self.task_label.configure(text=lang["new_task"])
+        self.type_label.configure(text=lang["task_type"])
+        self.deadline_label.configure(text=lang["deadline"])
+        self.today_label.configure(text=lang["today"])
+        self.add_task_button.configure(text=lang["add_task"])
+        self.todo_label.configure(text=lang["todo"])
+        self.completed_label.configure(text=lang["completed"])
+        self.tasks_today_button.configure(text=lang["tasks_today"])
+        self.show_all_button.configure(text=lang["show_all"])
+        self.change_theme_button.configure(text=lang["change_theme"])
+        self.filter_color_button.configure(text=lang["filter_color"])
+        self.chart_completion_button.configure(text=lang["chart_completion"])
+        self.chart_types_button.configure(text=lang["chart_types"])
+
+    def create_widgets(self):
+        # Ajout des widgets principaux
+        lang = self.languages[self.current_language]
+
+        self.task_label = ctk.CTkLabel(self.root, text=lang["title"], font=("Arial", 24, "bold"))
+        self.task_label.pack(pady=10)
+
+        self.task_frame = ctk.CTkFrame(self.root, corner_radius=15)
+        self.task_frame.pack(pady=10, padx=20, fill="x")
+
+        self.task_label = ctk.CTkLabel(self.task_frame, text=lang["new_task"], font=("Arial", 14))
+        self.task_label.grid(row=0, column=0, padx=10, pady=10, sticky="w")
+        self.task_entry = ctk.CTkEntry(self.task_frame, width=300, placeholder_text="Entrez une description...")
+        self.task_entry.grid(row=0, column=1, padx=10, pady=10)
+
+        self.type_label = ctk.CTkLabel(self.task_frame, text=lang["task_type"], font=("Arial", 14))
+        self.type_label.grid(row=1, column=0, padx=10, pady=10, sticky="w")
+        self.task_type = ctk.StringVar(self.root)
+        self.task_type.set("Préparation du vol")
+        self.task_type_menu = ctk.CTkOptionMenu(self.task_frame, variable=self.task_type, values=list(self.task_types.keys()))
+        self.task_type_menu.grid(row=1, column=1, padx=10, pady=10, sticky="w")
+
+        self.deadline_label = ctk.CTkLabel(self.task_frame, text=lang["deadline"], font=("Arial", 14))
+        self.deadline_label.grid(row=2, column=0, padx=10, pady=10, sticky="w")
+        self.deadline_entry = ctk.CTkEntry(self.task_frame, width=200, placeholder_text="YYYY-MM-DD")
+        self.deadline_entry.grid(row=2, column=1, padx=10, pady=10)
+
+        self.today_label = ctk.CTkLabel(self.task_frame, text=lang["today"], font=("Arial", 14))
+        self.today_label.grid(row=3, column=0, padx=10, pady=10, sticky="w")
+        self.today_entry = ctk.CTkEntry(self.task_frame, width=200)
+        self.today_entry.insert(0, self.today.strftime("%Y-%m-%d"))
+        self.today_entry.grid(row=3, column=1, padx=10, pady=10)
+
+        self.add_task_button = ctk.CTkButton(self.task_frame, text=lang["add_task"], command=self.add_task)
+        self.add_task_button.grid(row=4, column=1, pady=10)
+
+        # Bouton pour changer de langue
+        self.lang_button = ctk.CTkButton(self.task_frame, text="Changer Langue", command=self.toggle_language)
+        self.lang_button.grid(row=4, column=2, pady=10)
 
     def save_tasks_to_json(self):
         tasks_to_save = [
@@ -160,88 +197,6 @@ class FlightTestTaskManager:
             ctk.set_appearance_mode("light")
         
         self.update_theme()
-
-    def update_theme(self):
-        self.root.configure(bg=self.current_theme["bg"])
-
-        for button in self.root.winfo_children():
-            if isinstance(button, ctk.CTkButton):
-                button.configure(fg_color=self.current_theme["button_bg"], text_color=self.current_theme["button_fg"])
-
-        for widget in self.task_frame.winfo_children():
-            widget.configure(bg=self.current_theme["bg"], fg=self.current_theme["fg"])
-
-        for widget in self.todo_list_frame.winfo_children():
-            widget.configure(bg=self.current_theme["task_bg"], fg=self.current_theme["task_fg"])
-
-        for widget in self.completed_list_frame.winfo_children():
-            widget.configure(bg=self.current_theme["task_bg"], fg=self.current_theme["task_fg"])
-
-    def create_widgets(self):
-
-        ctk.CTkLabel(self.root, text=self.translations[self.current_language]["title"], font=("Arial", 24, "bold")).pack(pady=10)
-
-        self.task_frame = ctk.CTkFrame(self.root, corner_radius=15)
-        self.task_frame.pack(pady=10, padx=20, fill="x")
-
-        self.new_task_label = ctk.CTkLabel(self.task_frame, text=self.translations[self.current_language]["new_task"], font=("Arial", 14))
-        self.new_task_label.grid(row=0, column=0, padx=10, pady=10, sticky="w")
-        
-        self.task_entry = ctk.CTkEntry(self.task_frame, width=300, placeholder_text="Entrez une description...")
-        self.task_entry.grid(row=0, column=1, padx=10, pady=10)
-
-        self.task_type_label = ctk.CTkLabel(self.task_frame, text=self.translations[self.current_language]["task_type"], font=("Arial", 14))
-        self.task_type_label.grid(row=1, column=0, padx=10, pady=10, sticky="w")
-        
-        self.task_type = ctk.StringVar(self.root)
-        self.task_type.set("Préparation du vol")
-        self.task_type_menu = ctk.CTkOptionMenu(self.task_frame, variable=self.task_type, values=list(self.task_types.keys()))
-        self.task_type_menu.grid(row=1, column=1, padx=10, pady=10, sticky="w")
-
-        self.deadline_label = ctk.CTkLabel(self.task_frame, text=self.translations[self.current_language]["deadline"], font=("Arial", 14))
-        self.deadline_label.grid(row=2, column=0, padx=10, pady=10, sticky="w")
-        
-        self.deadline_entry = ctk.CTkEntry(self.task_frame, width=200, placeholder_text="YYYY-MM-DD")
-        self.deadline_entry.grid(row=2, column=1, padx=10, pady=10)
-
-        self.today_label = ctk.CTkLabel(self.task_frame, text=self.translations[self.current_language]["today_date"], font=("Arial", 14))
-        self.today_label.grid(row=3, column=0, padx=10, pady=10, sticky="w")
-        
-        self.today_entry = ctk.CTkEntry(self.task_frame, width=200)
-        self.today_entry.insert(0, self.today.strftime("%Y-%m-%d"))
-        self.today_entry.grid(row=3, column=1, padx=10, pady=10)
-
-        self.add_task_button = ctk.CTkButton(self.task_frame, text=self.translations[self.current_language]["add_task"], command=self.add_task)
-        self.add_task_button.grid(row=4, column=1, pady=10)
-
-        self.list_frame = ctk.CTkFrame(self.root, corner_radius=15)
-        self.list_frame.pack(pady=10, padx=20, fill="both", expand=True)
-
-        ctk.CTkLabel(self.list_frame, text="A faire :", font=("Arial", 14, "bold")).grid(row=0, column=0, padx=10, pady=10)
-        self.todo_list_frame = ctk.CTkFrame(self.list_frame)
-        self.todo_list_frame.grid(row=1, column=0, padx=10, pady=10)
-
-        ctk.CTkLabel(self.list_frame, text="Terminées :", font=("Arial", 14, "bold")).grid(row=0, column=1, padx=10, pady=10)
-        self.completed_list_frame = ctk.CTkFrame(self.list_frame)
-        self.completed_list_frame.grid(row=1, column=1, padx=10, pady=10)
-
-        self.button_frame = ctk.CTkFrame(self.root, corner_radius=15)
-        self.button_frame.pack(pady=10, padx=20, fill="x")
-
-        ctk.CTkButton(self.button_frame, text="Tâches d'Aujourd'hui", command=lambda: self.filter_tasks("today")).pack(side="left", padx=10, pady=10)
-        ctk.CTkButton(self.button_frame, text="Afficher toutes les tâches", command=self.show_all_tasks).pack(side="left", padx=10, pady=10)
-        ctk.CTkButton(self.button_frame, text="Changer le Thème", command=self.toggle_theme).pack(side="left", padx=10, pady=10)
-        ctk.CTkButton(self.button_frame, text="Filtrer par Couleur", command=self.filter_tasks_by_color).pack(side="left", padx=10, pady=10)
-
-        ctk.CTkButton(self.button_frame, text="Graphique: Tâches terminées", command=self.show_task_completion_pie_chart).pack(side="left", padx=10, pady=10)
-        ctk.CTkButton(self.button_frame, text="Graphique: Répartition des couleurs", command=self.show_task_type_pie_chart).pack(side="left", padx=10, pady=10)
-
-        self.title_label = ctk.CTkLabel(self.root, text=self.translations[self.current_language]["title"], font=("Arial", 24, "bold"))
-        self.title_label.pack(pady=10)
-
-        self.language_button = ctk.CTkButton(self.root, text="EN/FR", command=self.toggle_language)
-        self.language_button.pack(pady=5)
-
 
 
     def add_task(self):
